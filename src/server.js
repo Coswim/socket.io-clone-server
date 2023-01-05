@@ -17,15 +17,19 @@ const wsServer = SocketIO(httpServer, {
     methods: ["GET", "POST"],
   },
 });
-
+let nameList = [];
 wsServer.on("connection", (socket) => {
   console.log(socket);
   console.log("server is connection");
-  socket.on("roomEnter", () => {
+  socket.on("roomEnter", (name, nav) => {
     socket.join("watingRoomUsers");
+    nameList.push({ name, socketId: socket.id });
+    console.log(nameList);
+    nav("/room-list");
   });
   socket.on("requireList", () => {
-    socket.to("watingRoomUsers").emit("watingRoomUsers", socket.rooms);
+    console.log("requireList 실행");
+    socket.to("watingRoomUsers").emit("nameList", nameList);
   });
 });
 
